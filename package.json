@@ -7,16 +7,20 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "core-js": "^3.6.5",
+    "axios": "^0.18.0",
+    "core-js": "^3.13.0",
+    "element-ui": "^2.15.6",
     "vue": "^2.6.11",
+    "vue-axios": "^2.1.2",
+    "vue-cookie": "^1.1.4",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.0",
     "@vue/cli-service": "^4.5.0",
-    "less": "^3.0.4",
-    "less-loader": "^5.0.0",
+    "stylus": "^0.54.7",
+    "stylus-loader": "^3.0.2",
     "vue-template-compiler": "^2.6.11"
   }
 }

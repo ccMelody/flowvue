@@ -13,6 +13,7 @@ export default {
     if (typeof this.conf === 'object' && this.conf !== null) {
       Object.assign(data, this.conf)
     }
+    console.log("detail-data",data)
     return {
       data, // 流程图数据
       scaleVal: 100, // 流程图缩放比例 100%

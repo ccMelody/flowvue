@@ -70,7 +70,7 @@
             </template>
           </el-scrollbar>
           <footer class="transfer__footer">
-            <el-button type="info" plain size="mini" @click="confirm" >确定</el-button >
+            <el-button type="primary" plain size="mini" @click="confirm" >确定</el-button >
             <el-button plain size="mini" @click="closeTransfer">取消</el-button>
           </footer>
         </div>

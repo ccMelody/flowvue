@@ -237,7 +237,7 @@ const rangeTypeParams = {
   'lte':'<=',
   'gt':'>',
   'gte':'>=',
-  'eq': '=',
+  'eq': '==',
 }
 const defaultApproverForm = {
   approvers:[], // 审批人集合

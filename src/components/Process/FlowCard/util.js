@@ -55,6 +55,8 @@ export class NodeUtils {
       res.nodeId = "UserTask_" +this.idGenerator()
     }else if(type == 'start'){
       res.nodeId = "StratTask_" +this.idGenerator()
+    }else if(type == 'empty'){
+      res.nodeId = "Gateway_" +this.idGenerator()
     }else{
       res.nodeId = this.idGenerator()
     }

@@ -70,11 +70,11 @@
         <!-- 下拉 -->
         <row-wrapper 
           :key="index" 
-          :title="item.label" 
+          :title="item.fieldName" 
           v-if="couldShowIt(item,'el-select')">
           <el-select v-model="item.conditionValue" placeholder="请选择" size="small">
             <el-option
-              v-for="item in item.options"
+              v-for="item in item.option"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -446,6 +446,7 @@ export default {
       this.showingPCons
       .map(fid => this.pconditions.find(t => t.field === fid))
       .forEach((t)=> {
+        console.log("ttttt",t)
         if(!t) return // 发起人条件时 t 为空 发起人在其他地方获取
         const cValue = t.conditionValue
         if(cValue === undefined || cValue === null){
@@ -463,12 +464,16 @@ export default {
           const index = this.pconditions.findIndex(p => p.field === t.field)
           const labels = this.$refs['org' + index][0].selectedLabels
           nodeContent += `[${t.fieldName} = ${labels}] ` + '\n'
+        }else if(t.fieldType === 'el-select'){
+          var activeObj = t.option.find((cur)=>cur.value==cValue)
+          nodeContent +=  `[${t.fieldName} = ${activeObj.label}] ` + '\n'
         }else{
           nodeContent +=  `[${t.fieldName} = ${cValue}] ` + '\n'
         }
         const res = { field: t.field, conditionValue: cValue,fieldType:t.fieldType,fieldName:t.fieldName}
         conditions.push(res)
       }, [])
+      console.log("conditions",conditions)
       this.properties.conditions = conditions
       // 发起人虽然是条件 但是这里把发起人放到外部单独判断
       this.properties.initiator = this.initiator['dep&user']
@@ -503,16 +508,20 @@ export default {
           fieldName:item.fieldName,
           fieldType:item.fieldType
         }
-        if(item.conditionValue.type !='bet'){
-          obj.operator=rangeTypeParams[item.conditionValue.type],
+        if(item.fieldType == 'number'&&item.conditionValue.type !='bet'){
+          obj.operator=rangeTypeParams[item.conditionValue.type];
           obj.value=item.conditionValue.value;
+          conditionConfigs.push(obj)
+        }else if(item.fieldType=='el-select'){
+          obj.operator=rangeTypeParams['eq'];
+          obj.value=item.conditionValue;
           conditionConfigs.push(obj)
         }else{
           let objBet =Object.assign({},obj) 
-          obj.operator=rangeTypeParams[item.conditionValue.value[1]],
+          obj.operator=rangeTypeParams[item.conditionValue.value[1]]
           obj.value=item.conditionValue.value[0];
           conditionConfigs.push(obj)
-          objBet.operator=rangeTypeParams[item.conditionValue.value[2]],
+          objBet.operator=rangeTypeParams[item.conditionValue.value[2]]
           objBet.value=item.conditionValue.value[3];
           conditionConfigs.push(objBet)
         }

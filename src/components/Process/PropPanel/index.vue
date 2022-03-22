@@ -513,7 +513,7 @@ export default {
           obj.value=item.conditionValue.value;
           conditionConfigs.push(obj)
         }else if(item.fieldType=='el-select'){
-          obj.operator=rangeTypeParams['eq'];
+          obj.operator='==';
           obj.value=item.conditionValue;
           conditionConfigs.push(obj)
         }else{

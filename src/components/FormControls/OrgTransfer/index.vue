@@ -52,7 +52,7 @@
               </div>
             </template>
             <template v-for="type in tabKeys">
-             <div
+              <div
                 v-for="(item, index) in aloneCheckedData[type]"
                 :key="'alone' + type + index"
                 class="selected-item"
@@ -113,16 +113,17 @@
                   <el-tree
                     :ref="tab_item.tabKey"
                     lazy
-                    show-checkbox
+                    :show-checkbox="tabConfig.length==1 && tab_item.tabKey == 'role' ? false : true"
                     :props="{
                       children: tab_item.children,
                       label: tab_item.label,
                       isLeaf: tab_item.isLeaf,
                       disabled: tab_item.disabled
                     }"
-                    :load="onLoad"
+                    :load="(node,resolve)=>onLoad(node,resolve,tab_item.tabKey)"
                     node-key="nodeId"
                     :check-strictly="true"
+                    @node-click="handleNodeClick"
                     @check-change="(data, checked) => onCheckChange(data, checked, tab_item.tabKey)"
                   >
                   </el-tree>
@@ -213,31 +214,55 @@ export default {
     this.debounceSearch = debounce(this.searchDepUser, 500)
   },
   methods: {
+    //tab切换的el-tree的加载（没用到）
+    handleTabClick(){
+
+      // this.node_had = node;//这里是关键！在data里面定义一个变量，将node.level == 0的node存起来
+      // this.resolve_had = resolve;//同上，把node.level == 0的resolve也存起来
+
+      this.node_had.childNodes = [];//把存起来的node的子节点清空，不然会界面会出现重复树！
+      this.onLoad(this.node_had, this.resolve_had);//再次执行懒加载的方法
+    },
     //组织架构的数据懒加载
-    onLoad (node, resolve) {
+    onLoad (node, resolve,activeTabKey) {
       const subDepartList=node.data && node.data.subDepartList || []
-      const conf= this.tabConfig.find(t => t.tabKey === this.activeTabName)
+      const conf= this.tabConfig.find(t => t.tabKey === activeTabKey)
       // load 方法返回一个promise
-      // console.log("orgtransfer-conf",conf)
       conf.onload(node).then(res => {
+        if(conf.tabKey=='role'){
         let nodes = res.map( t => ( { nodeId: conf.nodeId(t), ...t } ) )
-        nodes=[...subDepartList,...nodes]
-        resolve(nodes)
-        for (const tabKey of this.tabKeys) {
-          const tree = this.$refs[tabKey][0]
-          this.selectedData[tabKey].forEach(data => {
+          nodes=[...nodes]
+          resolve(nodes)
+        }else{
+          let nodesOther = res.map( t => ( { nodeId: conf.nodeId(t), ...t } ) )
+          nodesOther=[...subDepartList,...nodesOther]
+          resolve(nodesOther)
+        }
+      
+        // for (const tabKey of this.tabKeys) {
+        //   const tree = this.$refs[tabKey][0]
+        //   this.selectedData[tabKey].forEach(data => {
+        //     // tree.setChecked(data.nodeId, true)
+        //     tree.setMyChecked(data, true, true);
+        //   })
+        // }
+          const tree = this.$refs[activeTabKey][0]
+          this.selectedData[activeTabKey].forEach(data => {
             // tree.setChecked(data.nodeId, true)
             tree.setMyChecked(data, true, true);
           })
-        }
       }).then(res=>{
-        for (const tabKey of this.tabKeys) {
-          const tree = this.$refs[tabKey][0]
-          this.aloneCheckedData[tabKey].forEach(data => {
-            // tree.setChecked(data.nodeId, true)
-            tree.setMyChecked(data, true, true);
-          })
-        }
+        const tree = this.$refs[activeTabKey][0];
+        this.aloneCheckedData[activeTabKey].forEach(data => {
+          tree.setMyChecked(data, true, true);
+        })
+        // for (const tabKey of this.tabKeys) {
+        //   const tree = this.$refs[tabKey][0]
+        //   this.aloneCheckedData[tabKey].forEach(data => {
+        //     // tree.setChecked(data.nodeId, true)
+        //     tree.setMyChecked(data, true, true);
+        //   })
+        // }
       })
     },
     //通过关键字检索到的用户
@@ -260,18 +285,25 @@ export default {
             allSelectData[type] = this.selectedData[type].concat(this.aloneCheckedData[type])
           }
           for (const item in allSelectData){
-             allSelectData[item].forEach(i=>{
-               this.searchRes.forEach(j=>{
-                 if(i.nodeId===j.nodeId){
-                   j.checked=true
-                 }
-               })
-             })
+            allSelectData[item].forEach(i=>{
+              this.searchRes.forEach(j=>{
+                if(i.nodeId===j.nodeId){
+                  j.checked=true
+                }
+              })
+            })
           }
             
         })
         .catch(err => console.warn(err))
         .finally(() => this.searchLoading = false)
+    },
+    //单独处理当为审批人时并且选择的职级(角色)选项的时候选中数据的操作
+    handleNodeClick(data){
+      if(this.tabConfig.length==1 && this.tabConfig[0].tabKey == 'role'){
+        console.log("role",data)
+        this.$set(this.selectedData, this.activeTabName,[data])
+      }
     },
     //选中/取消选中的
     onCheckChange (data, checked, tabKey) {
@@ -323,12 +355,15 @@ export default {
     },
     //删除选中的数据
     removeData (data, tabKey, fromAloneData = false) {
-      console.log("remocedata",data)
       if (fromAloneData) {
         const index = this.aloneCheckedData[tabKey].findIndex(t => t.nodeId === data.nodeId)
         index > -1 && this.aloneCheckedData[tabKey].splice(index, 1)
         this.$refs[tabKey][0].setMyChecked(data, false, true);
       } else {
+        //当为审批人选择职级时删除当前选择的数据
+        if(this.tabConfig.length==1 && this.tabConfig[0].tabKey == 'role'){
+          this.selectedData.role = []
+        }
         // this.$refs[tabKey][0].setChecked(data.nodeId, false)  // 触发onCheckChange
         this.$refs[tabKey][0].setMyChecked(data, false, true);
       }
@@ -371,6 +406,7 @@ export default {
       for (const type of this.tabKeys) {
         res[type] = this.selectedData[type].concat(this.aloneCheckedData[type])
       }
+      console.log("people-data",res)
       this.$emit('confirm', res)
       this.closeTransfer()
     },
@@ -419,7 +455,7 @@ export default {
         const [key, customConf] = getTabProp(item)
         this.$set(this.aloneCheckedData, key, [])
         this.$set(this.selectedData, key, [])
-        const defaultConf = CONFIG_LIST.find(t => t.tabKey === key)
+        const defaultConf = CONFIG_LIST.find(t => t.tabKey === key);//获取节点配置
         // console.log("defaultConf",customConf)
         defaultConf && initDefaultData(key, Object.assign({}, defaultConf, customConf))
       })
@@ -487,6 +523,7 @@ export default {
 
     > .el-tabs__item {
       flex-grow: 1;
+      text-align: center
     }
   }
 

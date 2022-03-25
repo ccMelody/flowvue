@@ -35,7 +35,7 @@
     <!-- 条件  -->
     <section class="condition-pane" v-if="value && isConditionNode()">
       <row-wrapper title="发起人" v-if="showingPCons.includes(-1)">
-          <fc-org-select ref="condition-org" :tabList="['dep&user']" v-model="initiator" />
+          <fc-org-select ref="condition-org" :tabList="['dep&user','role']" v-model="initiator" />
       </row-wrapper>
       
       <template v-for="(item, index) in pconditions">
@@ -152,7 +152,7 @@
                 @change="onOrgChange" />
               </div>
             </div>
-            <div class="option-box" style="border-bottom: 1px solid #e5e5e5;" v-if="orgCollection[approverForm.assigneeType] && orgCollection[approverForm.assigneeType].length > 1 || ['optional','director'].includes(approverForm.assigneeType)">
+            <div class="option-box" style="border-bottom: 1px solid #e5e5e5;" v-if="orgCollection[approverForm.assigneeType] && orgCollection[approverForm.assigneeType].length > 1 || ['optional','director','role'].includes(approverForm.assigneeType)">
               <p>多人审批时采用的审批方式</p>
               <el-radio v-model="approverForm.counterSign" :label="true" class="radio-item">会签（须所有审批人同意）</el-radio>
               <br>
@@ -263,7 +263,8 @@ export default {
       properties: {},// 当前节点数据
       // 发起人  start节点和condition节点需要
       initiator:{
-        'dep&user': []
+        'dep&user': [],
+        'role':[]
       }, 
       priorityLength: 0, // 当为条件节点时  显示节点优先级选项的数据
       //处理审批人的时候选择人的数据
@@ -311,11 +312,7 @@ export default {
           label:'主管',
           value: 'director',
           id:2
-        },
-        // {
-        //   label:'角色',
-        //   value: 'role'
-        // },
+        },    
         // {
         //   label:'岗位',
         //   value: 'position'
@@ -329,7 +326,13 @@ export default {
           label:'发起人自选',
           value: 'optional',
           id:4
-      }],
+        },
+        {
+          label:'职级',
+          value: 'role',
+          id:5
+        },
+      ],
       approverConfig:{},//新增的审批人的配置信息---用于配置bpmn
     };
   },
@@ -440,13 +443,13 @@ export default {
      * 条件节点确认保存得回调
      */
     conditionNodeComfirm() {
-      console.log('pconditions',this.pconditions)
+      // console.log('pconditions',this.pconditions)
       let nodeContent = ''
       const conditions = []
       this.showingPCons
       .map(fid => this.pconditions.find(t => t.field === fid))
       .forEach((t)=> {
-        console.log("ttttt",t)
+        // console.log("ttttt",t)
         if(!t) return // 发起人条件时 t 为空 发起人在其他地方获取
         const cValue = t.conditionValue
         if(cValue === undefined || cValue === null){
@@ -476,7 +479,9 @@ export default {
       console.log("conditions",conditions)
       this.properties.conditions = conditions
       // 发起人虽然是条件 但是这里把发起人放到外部单独判断
-      this.properties.initiator = this.initiator['dep&user']
+      // this.properties.initiator = this.initiator['dep&user']
+      this.properties.initiator = this.initiator
+      // console.log("发起人----",this.initiator)
       this.initiator['dep&user'] && (nodeContent = `[发起人: ${this.getOrgSelectLabel('condition')}]` + '\n' + nodeContent)
       let conditionConfigs= [{
         field: "userId",
@@ -490,8 +495,15 @@ export default {
         fieldType: "string",
         operator: "=",
         value: []
-      }]; 
-      this.properties.initiator&&this.properties.initiator.forEach(item=>{
+      },{
+        field: "staffLevelId",
+        fieldName:'职级',
+        fieldType: "string",
+        operator: "=",
+        value: []
+      }
+      ]; 
+      this.properties.initiator&&this.properties.initiator['dep&user'].forEach(item=>{
         if(item.hasOwnProperty('realName')){
           conditionConfigs[0].value.push(item.id)
           // userIdVal.push(item.id)
@@ -500,8 +512,12 @@ export default {
           // departDetailIdVal.push(item.id)
         }
       }) 
+      this.properties.initiator['role'].forEach(item=>{
+        conditionConfigs[2].value.push(item.id)
+      })
       conditionConfigs[0].value=conditionConfigs[0].value.join()
       conditionConfigs[1].value=conditionConfigs[1].value.join()
+      conditionConfigs[2].value=conditionConfigs[2].value.join()
       conditions.forEach(item=>{
         let obj ={
           field:item.field,
@@ -565,11 +581,18 @@ export default {
       Object.assign(this.properties, this.approverForm)
       //新增的审批人节点的配置信息用于生成bpmn文件的配置
       let assigneeTypeIndex =this.assigneeTypeOptions.findIndex((item)=>item.value==assigneeType)
-      let users= this.properties.approvers && this.properties.approvers.map(t=>t.id)
+      let users=[]
+      let staffLevelList =[]
+      if(this.assigneeTypeOptions[assigneeTypeIndex].id == 5){
+        staffLevelList = this.properties.approvers && this.properties.approvers.map(t=>t.id)
+      }else{
+        users= this.properties.approvers && this.properties.approvers.map(t=>t.id)
+      }
       this.approverConfig={
         type:this.assigneeTypeOptions[assigneeTypeIndex].id,//审批人类型（assigneeType）
         signType:this.properties.counterSign ? 'and' :'or',//会签/或签
         users:users,//审批人列表：type=1即指定成员时生效-------------------
+        staffLevel:staffLevelList,//type=5即角色/职级时生效
         grade:this.directorLevel,//主管级别：type=2即主管生效(1-N)
         gradeNext:this.useDirectorProxy,//找不到主管时，由上级主管代审批标记
         allowMulti:this.properties.optionalMultiUser//允许选择多人
@@ -654,7 +677,8 @@ export default {
       let nodeConditions = this.value.properties && this.value.properties.conditions
       //获取要选择条件弹窗里要显示的条件
       // this.pconditions = JSON.parse(JSON.stringify(this.$store.state.processConditions));
-      this.initiator['dep&user'] = this.value.properties.initiator
+      // this.initiator['dep&user'] = this.value.properties.initiator
+      this.initiator= this.value.properties.initiator
       if(Array.isArray(this.pconditions)){
         this.showingPCons = [-1] // 默认显示发起人
         this.pconditions.forEach(t => {
@@ -669,7 +693,8 @@ export default {
       }
     },
     getCondition(){
-      // '2c91e3f674cfeac80174d85ce8a6021c',2, accountbookId,billType
+      // let accountbookId = window.localStorage.getItem('accountbookId')||'0053';
+      // let billType =window.localStorage.getItem('billType')||2;
       let accountbookId = window.localStorage.getItem('accountbookId');
       let billType =window.localStorage.getItem('billType');
       getField(accountbookId,billType).then(res=>{
@@ -761,8 +786,8 @@ export default {
 }
 
 .radio-item {
-  // width: 110px;
-  width: 220px;
+  width: 130px;
+  // width: 220px;
   padding: 6px;
 }
 

@@ -65,10 +65,12 @@ export default {
     async initData(){
       this.processLoading=true;
       // this.$cookie.set('db', 'db_ck_oa', Infinity);//zszh
-      let accountbookId=window.localStorage.getItem('accountbookId')
-      let billType=window.localStorage.getItem('billType')
+      // let accountbookId=window.localStorage.getItem('accountbookId')||'0053'
+      let accountbookId=window.localStorage.getItem('accountbookId');
+      // let billType=window.localStorage.getItem('billType')||2
+      let billType=window.localStorage.getItem('billType');
       if(accountbookId && billType){
-        //获取流程图的数据 '2c91e3f674cfeac80174d85ce8a6021c',2 accountbookId,billType
+        //获取流程图的数据
         await this.getFlowData(accountbookId,billType)
       }else{
         this.$message.error("accountbookId或billType不存在")
@@ -98,7 +100,6 @@ export default {
     publish() {
       const getCmpData = (name) => this.$refs[name].getData();
       const p3 = getCmpData("processDesign");
-      console.log("p3",p3)
       Promise.all([p3])
         .then((res) => {
           let param ={

@@ -225,7 +225,10 @@ export default {
     },
     //组织架构的数据懒加载
     onLoad (node, resolve,activeTabKey) {
-      const subDepartList=node.data && node.data.subDepartList || []
+      const subDepartList=node.data && node.data.subDepartList || [];
+      subDepartList.length>0&&subDepartList.forEach(item=>{
+        item.nodeId=item.id
+      })
       const conf= this.tabConfig.find(t => t.tabKey === activeTabKey)
       // load 方法返回一个promise
       conf.onload(node).then(res => {
@@ -248,7 +251,6 @@ export default {
         // }
           const tree = this.$refs[activeTabKey][0]
           this.selectedData[activeTabKey].forEach(data => {
-            // tree.setChecked(data.nodeId, true)
             tree.setMyChecked(data, true, true);
           })
       }).then(res=>{

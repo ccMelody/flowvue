@@ -480,9 +480,12 @@ export default {
       this.properties.conditions = conditions
       // 发起人虽然是条件 但是这里把发起人放到外部单独判断
       // this.properties.initiator = this.initiator['dep&user']
-      this.properties.initiator = this.initiator
-      // console.log("发起人----",this.initiator)
-      this.initiator['dep&user'] && (nodeContent = `[发起人: ${this.getOrgSelectLabel('condition')}]` + '\n' + nodeContent)
+      this.properties.initiator = this.initiator;
+      console.log("发起人----",this.initiator,'99',!!this.getOrgSelectLabel('condition'))
+      // this.initiator['dep&user'] && (nodeContent = `[发起人: ${this.getOrgSelectLabel('condition')}]` + '\n' + nodeContent)
+      if(this.initiator && this.getOrgSelectLabel('condition')){
+        nodeContent = `[发起人: ${this.getOrgSelectLabel('condition')}]` + '\n' + nodeContent
+      }
       let conditionConfigs= [{
         field: "userId",
         fieldName:'提交人',
@@ -512,7 +515,7 @@ export default {
           // departDetailIdVal.push(item.id)
         }
       }) 
-      this.properties.initiator['role'].forEach(item=>{
+      this.properties.initiator&&this.properties.initiator['role'].forEach(item=>{
         conditionConfigs[2].value.push(item.id)
       })
       conditionConfigs[0].value=conditionConfigs[0].value.join()
@@ -550,7 +553,7 @@ export default {
     },
     //返回当前选择的人/部门/公司的文字
     getOrgSelectLabel (type) {
-      return this.$refs[type + '-org']['selectedLabels']
+      return this.$refs[type + '-org']&&this.$refs[type + '-org']['selectedLabels'] ||''
     },
     /**
      * 开始节点确认保存

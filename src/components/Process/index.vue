@@ -10,8 +10,9 @@ export default {
   data() {
     let data = getMockData();//获取模拟的数据（基本数据，包含一个开始节点和审批节点）
     //把mackData里的流程图的数据
-    if (typeof this.conf === 'object' && this.conf !== null) {
-      Object.assign(data, this.conf)
+    if (this.conf && typeof this.conf === 'object' && Object.keys(this.conf).length) {
+      // Object.assign(data, this.conf)
+      data=this.conf;
     }
     console.log("detail-data",data)
     return {

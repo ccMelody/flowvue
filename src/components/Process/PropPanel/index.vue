@@ -696,8 +696,8 @@ export default {
       }
     },
     getCondition(){
-      // let accountbookId = window.localStorage.getItem('accountbookId')||'0053';
-      // let billType =window.localStorage.getItem('billType')||2;
+      // let accountbookId = window.localStorage.getItem('accountbookId')||'0333';
+      // let billType =window.localStorage.getItem('billType')||9;
       let accountbookId = window.localStorage.getItem('accountbookId');
       let billType =window.localStorage.getItem('billType');
       getField(accountbookId,billType).then(res=>{

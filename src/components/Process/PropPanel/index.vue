@@ -72,7 +72,7 @@
           :key="index" 
           :title="item.fieldName" 
           v-if="couldShowIt(item,'el-select')">
-          <el-select v-model="item.conditionValue" multiple placeholder="请选择" size="small">
+          <el-select v-model="item.conditionValue" style="width:100%" multiple placeholder="请选择" size="small">
             <el-option
               v-for="item in item.option"
               :key="item.value"

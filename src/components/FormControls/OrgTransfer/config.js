@@ -79,7 +79,7 @@ function loadUserData ( node ) {
 //   return res
 // }
 async function getStaffLevel () {
-  const promises = [getStaffLevelList()]
+  const promises = [getStaffLevelList({accountbookId:accountbookId})]
   let res = []
   try {
     res = await Promise.all( promises )
@@ -167,11 +167,10 @@ const roleOption={
   // 动态请求后台拿到节点数据 返回一个promise
   onload: loadRoleData,
   // 搜索节点方法 
-  // onsearch: async function ( searchString, resolve, reject ) {
-  //   // const param = { accountbookId:accountbookId, userName: searchString }
-  //   let employeedata= await getUsersBySearch(accountbookId,searchString)
-  //   resolve( employeedata.data )
-  // }
+  onsearch: async function ( searchString, resolve, reject ) {
+    let employeedata= await getStaffLevelList({accountbookId:accountbookId,name:searchString})
+    resolve( employeedata.data )
+  }
 }
 
 export const DEP_CONFIG = Object.assign( {}, defaultOption )

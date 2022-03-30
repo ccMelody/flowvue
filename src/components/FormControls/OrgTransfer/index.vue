@@ -24,7 +24,7 @@
               size="mini"
               style="width: 180px;"
               type="search"
-              placeholder="搜索人员"
+              placeholder="搜索..."
               :disabled="!searchable"
             ></el-input>
             <span>

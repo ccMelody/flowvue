@@ -71,9 +71,12 @@ export const getUsersBySearch = (accountbookId,userName)=>{
 }
 
 //获取职级列表
-export const getStaffLevelList =()=>{
+export const getStaffLevelList =(params)=>{
   return request({
     url:"staffLevelController.do?getListForOA",
     method:"get",
+    params:{
+      ...params
+    }
   })
 }

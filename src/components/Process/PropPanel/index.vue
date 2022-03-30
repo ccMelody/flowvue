@@ -72,7 +72,7 @@
           :key="index" 
           :title="item.fieldName" 
           v-if="couldShowIt(item,'el-select')">
-          <el-select v-model="item.conditionValue" placeholder="请选择" size="small">
+          <el-select v-model="item.conditionValue" multiple placeholder="请选择" size="small">
             <el-option
               v-for="item in item.option"
               :key="item.value"
@@ -452,7 +452,7 @@ export default {
         // console.log("ttttt",t)
         if(!t) return // 发起人条件时 t 为空 发起人在其他地方获取
         const cValue = t.conditionValue
-        if(cValue === undefined || cValue === null){
+        if(cValue === undefined || cValue === null || cValue.length==0){
           return 
         }
         const numberTypeCmp = ['el-input-number','fc-date-duration','fc-time-duration','fc-amount', 'fc-calculate','number']
@@ -468,8 +468,18 @@ export default {
           const labels = this.$refs['org' + index][0].selectedLabels
           nodeContent += `[${t.fieldName} = ${labels}] ` + '\n'
         }else if(t.fieldType === 'el-select'){
-          var activeObj = t.option.find((cur)=>cur.value==cValue)
-          nodeContent +=  `[${t.fieldName} = ${activeObj.label}] ` + '\n'
+          var activeArr=[];
+          cValue&&cValue.length&&cValue.forEach(cur=>{
+            t.option.forEach(item=>{
+              if(item.value==cur){
+                activeArr.push(item.label)
+              }
+            })
+          })
+          var activeStr=activeArr.join(",");
+          nodeContent +=  `[${t.fieldName} = ${activeStr}] ` + '\n'
+          // var activeObj = t.option.find((cur)=>cur.value==cValue)
+          // nodeContent +=  `[${t.fieldName} = ${activeObj.label}] ` + '\n'
         }else{
           nodeContent +=  `[${t.fieldName} = ${cValue}] ` + '\n'
         }
@@ -481,7 +491,7 @@ export default {
       // 发起人虽然是条件 但是这里把发起人放到外部单独判断
       // this.properties.initiator = this.initiator['dep&user']
       this.properties.initiator = this.initiator;
-      console.log("发起人----",this.initiator,'99',!!this.getOrgSelectLabel('condition'))
+      console.log("发起人----",this.initiator,'getOrgSelectLabel',!!this.getOrgSelectLabel('condition'))
       // this.initiator['dep&user'] && (nodeContent = `[发起人: ${this.getOrgSelectLabel('condition')}]` + '\n' + nodeContent)
       if(this.initiator && this.getOrgSelectLabel('condition')){
         nodeContent = `[发起人: ${this.getOrgSelectLabel('condition')}]` + '\n' + nodeContent
@@ -533,7 +543,7 @@ export default {
           conditionConfigs.push(obj)
         }else if(item.fieldType=='el-select'){
           obj.operator='==';
-          obj.value=item.conditionValue;
+          obj.value=item.conditionValue.join(',');
           conditionConfigs.push(obj)
         }else{
           let objBet =Object.assign({},obj) 
@@ -722,6 +732,7 @@ export default {
     },
     value(newVal) {
       if (newVal && newVal.properties) {
+        console.log("value---",newVal)
         this.visible = true;
         this.properties = JSON.parse(JSON.stringify(newVal.properties));
         if (this.properties) {  

@@ -109,7 +109,7 @@ export default {
           this.getCondition(param.processData);
           let arrfieldtemp = handlereduce(this.fieldArr,'field')
           param.processData.conditionField=arrfieldtemp;
-          // console.log('配置数据', param)
+          // console.log('配置数据--before', param)
           this.sendToServer(param);
         })
         .catch((err) => {

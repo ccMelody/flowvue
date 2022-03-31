@@ -65,10 +65,8 @@ export default {
     async initData(){
       this.processLoading=true;
       // this.$cookie.set('db', 'db_ck_oa', Infinity);//zszh
-      // let accountbookId=window.localStorage.getItem('accountbookId')||'0333';
-      // let billType=window.localStorage.getItem('billType')||9;
-      let accountbookId=window.localStorage.getItem('accountbookId');
-      let billType=window.localStorage.getItem('billType');
+      let accountbookId = window.ccAccountbookId
+      let billType = window.ccBillType
       if(accountbookId && billType){
         //获取流程图的数据
         await this.getFlowData(accountbookId,billType)
@@ -124,8 +122,11 @@ export default {
     sendToServer(param) {
       console.log('配置数据', param)
       this.processLoading=true;
-      let accountbookId=window.localStorage.getItem('accountbookId')
-      let billType=window.localStorage.getItem('billType')
+       // let accountbookId=window.localStorage.getItem('accountbookId')
+      // let billType=window.localStorage.getItem('billType')
+      let accountbookId = window.ccAccountbookId
+      let billType = window.ccBillType
+      console.log("eee",billType)
       saveData(accountbookId,billType,param).then(res=>{       
         this.processLoading=false; 
         this.$message({
@@ -133,7 +134,6 @@ export default {
           message:res.data.msg,
           center:true
         })
-        
       })
     },
   },

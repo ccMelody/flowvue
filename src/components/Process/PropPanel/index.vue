@@ -706,10 +706,10 @@ export default {
       }
     },
     getCondition(){
-      // let accountbookId = window.localStorage.getItem('accountbookId')||'0333';
-      // let billType =window.localStorage.getItem('billType')||9;
-      let accountbookId = window.localStorage.getItem('accountbookId');
-      let billType =window.localStorage.getItem('billType');
+      // let accountbookId = window.localStorage.getItem('accountbookId');
+      // let billType =window.localStorage.getItem('billType');
+      let accountbookId = window.ccAccountbookId;
+      let billType = window.ccBillType;
       getField(accountbookId,billType).then(res=>{
         if(res.data !=''){
           this.pconditions = JSON.parse(res.data)

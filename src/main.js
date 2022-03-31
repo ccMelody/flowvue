@@ -17,6 +17,15 @@ Vue.use(VueCookie)
 
 Vue.config.productionTip = false
 
+function getUrlParam(name){
+  var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+  var r = window.location.search.substr(1).match(reg);
+  if (r!=null) return unescape(r[2]); return null;
+}
+
+window.ccBillType = getUrlParam('billType')
+window.ccAccountbookId = getUrlParam('accountbookId')
+console.log("billtype",window.ccBillType,window.ccAccountbookId)
 new Vue({
   router,
   store,

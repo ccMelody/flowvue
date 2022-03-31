@@ -1,8 +1,16 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable no-prototype-builtins */
 import { getDept,getUsersByDept,getUsersBySearch,getStaffLevelList} from '@/api'
-// let accountbookId = window.localStorage.getItem('accountbookId')||'0333';
-let accountbookId = window.localStorage.getItem('accountbookId');
+// let accountbookId = window.localStorage.getItem('accountbookId');
+function getUrlParam(name){
+  var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+  var r = window.location.search.substr(1).match(reg);
+  if (r!=null) return unescape(r[2]); return null;
+}
+window.ccBillType = getUrlParam('billType')
+window.ccAccountbookId = getUrlParam('accountbookId')
+let accountbookId = window.ccAccountbookId;
+console.log("accout",accountbookId);
 const toHump = name => name.replace( /\_(\w)/g, function ( all, letter ) {
   return letter.toUpperCase()
 } )

@@ -92,16 +92,25 @@
               :class="{ active: searchMode }"
               v-loading="searchLoading" >
               <div class="hidden-tag" @click="searchString = ''">关闭</div>
-              <div v-for="(item, index) in searchRes" :key="index" class="item" @click="searchItemClick(item)">
-                <div>
-                  <div>{{ getNodeProp(item, 'label') }}</div>
-                  <div class="text-ellipsis search-res-tip" >
-                    {{ getNodeProp(item, 'searchResTip') }}
+              <div v-if="tabConfig.length==1 && activeTabName == 'role' ">
+                <div v-for="(item, index) in searchRes" :key="index" class="item" @click="handleNodeClick(item)">
+                  <div>
+                    <div>{{ getNodeProp(item, 'label') }}</div>
                   </div>
                 </div>
-                <el-checkbox v-model="item.checked" @change="checked => checked ? addData(item) : removeData(item, activeTabName, true)" @click.stop.native="()=>{}"></el-checkbox>
               </div>
-            </div>
+              <div v-else>
+                <div v-for="(item, index) in searchRes" :key="index" class="item" @click="searchItemClick(item)">
+                  <div>
+                    <div>{{ getNodeProp(item, 'label') }}</div>
+                    <div class="text-ellipsis search-res-tip" >
+                      {{ getNodeProp(item, 'searchResTip') }}
+                    </div>
+                  </div>
+                  <el-checkbox v-model="item.checked" @change="checked => checked ? addData(item) : removeData(item, activeTabName, true)" @click.stop.native="()=>{}"></el-checkbox>
+                </div>
+              </div>
+            </div>  
             <!-- 手动选择的人员tree -->
             <el-scrollbar style="height:100%;">
               <el-tabs

@@ -1,14 +1,14 @@
-const path = require( 'path' )
+const path = require('path')
 
-function resolve ( dir ) {
-  return path.join( __dirname, dir )
+function resolve(dir) {
+  return path.join(__dirname, dir)
 }
 
 module.exports = {
   runtimeCompiler: true,
   // publicPath: '/approvalflow/',
   publicPath: './',
-  outputDir:'flowPage',
+  outputDir: 'flowPage',
   css: {
     loaderOptions: {
       // 给 stylus-loader 传递选项
@@ -35,5 +35,5 @@ module.exports = {
       }
     }
   },
-  
+
 }

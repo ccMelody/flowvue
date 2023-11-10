@@ -25,7 +25,11 @@ function getUrlParam(name){
 
 window.ccBillType = getUrlParam('billType')
 window.ccAccountbookId = getUrlParam('accountbookId')
-console.log("billtype",window.ccBillType,window.ccAccountbookId)
+window.oaTemplateId = getUrlParam('templateId')
+// window.ccBillType = 105
+// window.ccAccountbookId ='2c91e3f686bee30b0186c4d58bea6f06'
+// window.oaTemplateId = '2c91e302887ca4d80188806f6eec3bf0'
+console.log("billtype",window.ccBillType,window.ccAccountbookId,'templateid',window.oaTemplateId)
 new Vue({
   router,
   store,

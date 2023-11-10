@@ -570,7 +570,7 @@ export default {
           fieldName:item.fieldName,
           fieldType:item.fieldType
         }
-        if(item.fieldType == 'number'&&item.conditionValue.type !='bet'){
+        if((item.fieldType == 'number'&&item.conditionValue.type !='bet')||(item.fieldType == 'string')||(item.fieldType == 'date'&&item.conditionValue.type !='bet')){
           obj.operator=rangeTypeParams[item.conditionValue.type];
           obj.value=item.conditionValue.value;
           conditionConfigs.push(obj)

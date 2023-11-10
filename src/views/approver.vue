@@ -67,15 +67,16 @@ export default {
       // this.$cookie.set('db', 'db_ck_oa', Infinity);//zszh
       let accountbookId = window.ccAccountbookId
       let billType = window.ccBillType
-      if(accountbookId && billType){
+      let templateId = window.oaTemplateId
+      if(accountbookId && billType && templateId){
         //获取流程图的数据
-        await this.getFlowData(accountbookId,billType)
+        await this.getFlowData(accountbookId, billType, templateId)
       }else{
-        this.$message.error("accountbookId或billType不存在")
+        this.$message.error("accountbookId或billType或templateId不存在")
       }  
     },
-    getFlowData(accountbookId,billType){
-      getProcessData(accountbookId,billType).then(res=>{
+    getFlowData(accountbookId, billType, templateId){
+      getProcessData(accountbookId, billType, templateId).then(res=>{
         console.log("res-approver",res)
         if(res.data !=''){
           let data = JSON.parse(res.data)

@@ -710,7 +710,8 @@ export default {
       // let billType =window.localStorage.getItem('billType');
       let accountbookId = window.ccAccountbookId;
       let billType = window.ccBillType;
-      getField(accountbookId,billType).then(res=>{
+      let templateId = window.oaTemplateId
+      getField(accountbookId,billType,templateId).then(res=>{
         if(res.data !=''){
           this.pconditions = JSON.parse(res.data)
         }

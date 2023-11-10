@@ -1,25 +1,27 @@
 import request from '@/axios';
 
 // 流程图的数据
-export const getProcessData = (accountbookId,billType) => {
+export const getProcessData = (accountbookId,billType,templateId) => {
   return request({
     url:  'oaBillConfigController.do?getProcessConfig',
     method: 'get',
     params:{
       accountbookId,
-      billType
+      billType,
+      templateId
     }
   })
 }
 
 //获取条件
-export const getField = (accountbookId,billType) => {
+export const getField = (accountbookId,billType,templateId) => {
   return request({
     url: 'oaBillConfigController.do?getFieldConfig',
     method: 'get',
     params:{
       accountbookId,
-      billType
+      billType,
+      templateId
     },
   })
 }

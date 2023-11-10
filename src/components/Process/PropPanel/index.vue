@@ -84,6 +84,36 @@
               <i  class="el-icon-delete" style="cursor: pointer;" @click="onDelCondition(item)"></i>
             </template>
         </row-wrapper>
+        <!-- 文本 -->
+        <row-wrapper 
+          :key="index" 
+          :title="item.fieldName" 
+          v-if="couldShowIt(item,'string')">
+          <text-input
+            :key="index"
+            :title="timeTangeLabel(item)"
+            v-model="item.conditionValue"
+            style="padding-right: 6px;"
+          ></text-input>
+          <template v-slot:action>
+            <i  class="el-icon-delete" style="cursor: pointer;" @click="onDelCondition(item)"></i>
+          </template>
+        </row-wrapper>
+        <!-- 时间 -->
+        <row-wrapper 
+          :key="index" 
+          :title="item.fieldName" 
+          v-if="couldShowIt(item,'date')">
+          <date-picker
+            :key="index"
+            :title="timeTangeLabel(item)"
+            v-model="item.conditionValue"
+            style="padding-right: 6px;"
+          ></date-picker>
+          <template v-slot:action>
+            <i  class="el-icon-delete" style="cursor: pointer;" @click="onDelCondition(item)"></i>
+          </template>
+        </row-wrapper>
           <!-- 组织机构 -->
         <!-- <row-wrapper :key="index" :title="item.label" v-if="couldShowIt(item,'fc-org-select')">
           <fc-org-select 
@@ -225,12 +255,15 @@ import { NodeUtils } from "../FlowCard/util.js"
 import RowWrapper from './RowWrapper';
 //金额组件？
 import NumInput from "./NumInput"
+import TextInput from "./TextInput"
+import DatePicker from "./DatePicker"
 const rangeType = {
   'lt': '<',
   'lte':'≤',
   'gt':'>',
   'gte':'≥',
   'eq': '=',
+  'contains': '包含',
 }
 const rangeTypeParams = {
   'lt': '<',
@@ -238,6 +271,7 @@ const rangeTypeParams = {
   'gt':'>',
   'gte':'>=',
   'eq': '==',
+  'contains': 'contains',
 }
 const defaultApproverForm = {
   approvers:[], // 审批人集合
@@ -449,13 +483,12 @@ export default {
       this.showingPCons
       .map(fid => this.pconditions.find(t => t.field === fid))
       .forEach((t)=> {
-        // console.log("ttttt",t)
         if(!t) return // 发起人条件时 t 为空 发起人在其他地方获取
         const cValue = t.conditionValue
         if(cValue === undefined || cValue === null || cValue.length==0){
           return 
         }
-        const numberTypeCmp = ['el-input-number','fc-date-duration','fc-time-duration','fc-amount', 'fc-calculate','number']
+        const numberTypeCmp = ['el-input-number','fc-date-duration','fc-time-duration','fc-amount', 'fc-calculate','number','string','date']
         if(numberTypeCmp.includes(t.fieldType)){
           if(cValue.type === 'bet'){
             const numVal = cValue.value
@@ -744,7 +777,9 @@ export default {
   },
   components: {
     "num-input": NumInput,
-    "row-wrapper": RowWrapper
+    "row-wrapper": RowWrapper,
+    "text-input":TextInput,
+    'date-picker':DatePicker
   }
 };
 </script>

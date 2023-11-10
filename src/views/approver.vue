@@ -127,8 +127,8 @@ export default {
       // let billType=window.localStorage.getItem('billType')
       let accountbookId = window.ccAccountbookId
       let billType = window.ccBillType
-      console.log("eee",billType)
-      saveData(accountbookId,billType,param).then(res=>{       
+      let templateId = window.oaTemplateId
+      saveData(accountbookId,billType,templateId,param).then(res=>{       
         this.processLoading=false; 
         this.$message({
           type:res.data.success ? "success":'error',

@@ -2,6 +2,7 @@
 /* eslint-disable no-prototype-builtins */
 import { getDept,getUsersByDept,getUsersBySearch,getStaffLevelList} from '@/api'
 // let accountbookId = window.localStorage.getItem('accountbookId');
+import {Message} from 'element-ui';
 function getUrlParam(name){
   var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
   var r = window.location.search.substr(1).match(reg);
@@ -22,6 +23,16 @@ async function getDepChildNode () {
   try {
     res = await Promise.all( promises )
   } catch ( error ) {/* this.$message.error('获取子节点数据出错')*/ }
+  if (typeof res[0].data == 'string') {
+    Message({
+      message: `获取部门数据出错`,
+      type: 'error',
+      dangerouslyUseHTMLString: true,
+      // duration: 0,
+      showClose: true,
+    });
+    return []
+  }
   const nodes = res.reduce( ( p, c ) => {
     return [...p, ...c.data]
   }, [] )

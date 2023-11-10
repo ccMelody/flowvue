@@ -27,13 +27,14 @@ export const getField = (accountbookId,billType,templateId) => {
 }
 
 //保存数据
-export const saveData = (accountbookId,billType,data)=>{
+export const saveData = (accountbookId, billType, templateId, data) => {
   return request({
     url:'oaBillConfigController.do?saveProcessConfig',
     method:'post',
     params:{
       accountbookId,
-      billType
+      billType,
+      templateId
     },
     data:data
   })

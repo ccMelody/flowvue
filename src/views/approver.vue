@@ -67,12 +67,12 @@ export default {
       // this.$cookie.set('db', 'db_ck_oa', Infinity);//zszh
       let accountbookId = window.ccAccountbookId
       let billType = window.ccBillType
-      let templateId = window.oaTemplateId
-      if(accountbookId && billType && templateId){
+      let templateId = window.oaTemplateId;//模板id不是必填字段，可为空
+      if(accountbookId && billType){
         //获取流程图的数据
         await this.getFlowData(accountbookId, billType, templateId)
       }else{
-        this.$message.error("accountbookId或billType或templateId不存在")
+        this.$message.error("accountbookId或billType不存在")
       }  
     },
     getFlowData(accountbookId, billType, templateId){

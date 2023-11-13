@@ -33,8 +33,9 @@
            v-model="cloneData.value[0]"
            type="date"
            @change="update"
-           style="width:100%;marign-bottom:5px;"
+           style="width:100%;"
            value-format='yyyy-MM-dd'
+           class="date-picker-s"
          ></el-date-picker>
        </el-col>
        <el-col :span="4">
@@ -58,6 +59,7 @@
            @change="update"
            style="width:100%;"
            value-format='yyyy-MM-dd'
+           class="date-picker-e"
          ></el-date-picker>
        </el-col>
      </div>
@@ -160,5 +162,11 @@ ellipsis(n) {
       color: #333;
     }
   }
+}
+.date-picker-s{
+  margin-bottom: 10px
+}
+.date-picker-e{
+  margin-top: 10px
 }
 </style>

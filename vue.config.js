@@ -24,8 +24,8 @@ module.exports = {
       '/api': {
         //本地服务接口地址
         // target: 'http://192.168.1.67:8080/jeecg_war_exploded/',
-        // target: 'https://www.caika.net/test/',
-        target: 'http://localhost:8080/sczz/',
+        target: 'https://www.caika.net/test/',
+        // target: 'http://localhost:8080/sczz/',
         // target:'http://192.168.10.165:8080/saas/',
         secure: false,
         changeOrigin: true,

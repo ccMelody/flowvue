@@ -154,11 +154,23 @@ function addNodeButton(ctx, data, h, isBranch = false) {
             </div>
 
             <div>
-              <div class="condition-icon" onClick={this.eventLancher.bind(ctx, "appendBranch", data, isBranch)}>
-                <i class="iconfont iconcondition"></i>
-              </div>
-              条件分支
+              <el-popover placement="bottom" trigger="hover" width="180">
+                <div class="condition-item-box">
+                  <p class="item-tip">分支下方节点整体放置在</p>
+                  <p class="condition-item" onClick={this.eventLancher.bind(ctx, "appendBranch", data, isBranch, "left")}>左侧</p>
+                  <p class="condition-item" onClick={this.eventLancher.bind(ctx, "appendBranch", data, isBranch,"default")}>不移动</p>
+                  <p class="item-tip">分支聚合后执行下方节点</p>
+                </div>
+
+                <div slot="reference">
+                  <div class="condition-icon" >
+                    <i class="iconfont iconcondition"></i>
+                  </div>
+                    条件分支
+                </div>
+              </el-popover>
             </div>
+            
           </div>
 
           <button class="btn" type="button" slot="reference">

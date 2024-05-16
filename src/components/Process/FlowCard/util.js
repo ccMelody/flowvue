@@ -215,7 +215,7 @@ export class NodeUtils {
    * 添加条件分支 branch 
    * @param { Object } data - 目标节点所在节点数据，在该节点最后添加分支节点
    */
-  static appendBranch ( data, isBottomBtnOfBranch ) {
+  static appendBranch ( data, isBottomBtnOfBranch ,conditionType) {
     // isBottomBtnOfBranch 用户点击的是分支树下面的按钮
     let nodeData = data
     // 由于conditionNodes是数组 不能添加下级分支 故在两个分支树之间添加一个不会显示的正常节点 兼容此种情况
@@ -239,7 +239,24 @@ export class NodeUtils {
       c.properties.priority = i;
       return c
     } )
-    nodeData.conditionNodes = conditionNodes
+    console.log('conditionNodes---', nodeData, 'ee', conditionNodes)
+    
+    // nodeData.conditionNodes = conditionNodes
+    if (conditionType == 'left') {
+      let dataNew = JSON.parse(JSON.stringify(nodeData));
+      if (dataNew.conditionNodes) {
+        conditionNodes[0].conditionNodes = dataNew.conditionNodes;
+        conditionNodes[0].conditionNodes.forEach( n => {
+          n.prevId = conditionNodes[0].nodeId
+        })
+      }
+      if (dataNew.childNode) {
+        conditionNodes[0].childNode = dataNew.childNode;
+        conditionNodes[0].childNode.prevId = conditionNodes[0].nodeId;
+        delete nodeData.childNode
+      }
+    }
+    nodeData.conditionNodes = conditionNodes;
   }
   /**
    * 重设节点优先级（条件节点）

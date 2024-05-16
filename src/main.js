@@ -23,12 +23,12 @@ function getUrlParam(name){
   if (r!=null) return unescape(r[2]); return null;
 }
 
-window.ccBillType = getUrlParam('billType')
-window.ccAccountbookId = getUrlParam('accountbookId')
-window.oaTemplateId = getUrlParam('templateId')
-// window.ccBillType = 105
-// window.ccAccountbookId ='2c91e3f686bee30b0186c4d58bea6f06'
-// window.oaTemplateId = '';//2c91e302887ca4d80188806f6eec3bf0
+// window.ccBillType = getUrlParam('billType')
+// window.ccAccountbookId = getUrlParam('accountbookId')
+// window.oaTemplateId = getUrlParam('templateId')
+window.ccBillType = 4
+window.ccAccountbookId ='2c91e3ed8e59b201018e59e943990023'
+window.oaTemplateId = '00001';//2c91e302887ca4d80188806f6eec3bf0
 console.log("billtype",window.ccBillType,window.ccAccountbookId,'templateid',window.oaTemplateId)
 new Vue({
   router,

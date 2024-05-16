@@ -706,6 +706,9 @@ export default {
       for (const key in this.approverForm) {
         if (this.value.properties.hasOwnProperty(key)) {
           this.approverForm[key] = this.value.properties[key];
+          if (this.approverForm.assigneeType === 'director') {
+            this.directorLevel = this.value.approverConfig.grade
+          }
         }
       }
       const approvers = this.approverForm.approvers

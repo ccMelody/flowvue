@@ -239,17 +239,17 @@ export class NodeUtils {
       c.properties.priority = i;
       return c
     } )
-    console.log('conditionNodes---', nodeData, 'ee', conditionNodes)
     
     // nodeData.conditionNodes = conditionNodes
     if (conditionType == 'left') {
       let dataNew = JSON.parse(JSON.stringify(nodeData));
-      if (dataNew.conditionNodes) {
-        conditionNodes[0].conditionNodes = dataNew.conditionNodes;
-        conditionNodes[0].conditionNodes.forEach( n => {
-          n.prevId = conditionNodes[0].nodeId
-        })
-      }
+      // if (dataNew.conditionNodes) {
+      //   conditionNodes[0].conditionNodes = dataNew.conditionNodes;
+      //   conditionNodes[0].conditionNodes.forEach( n => {
+      //     n.prevId = conditionNodes[0].nodeId
+      //   })
+      //   delete nodeData.conditionNodes
+      // }
       if (dataNew.childNode) {
         conditionNodes[0].childNode = dataNew.childNode;
         conditionNodes[0].childNode.prevId = conditionNodes[0].nodeId;

@@ -1,5 +1,7 @@
 <script>
 import { NodeUtils } from "./util.js";
+import leftimg from "./imgs/left.png";
+import defaultimg from "./imgs/default.png";
 //是否是条件分支
 const isCondition = data => data.type === "condition";
 //判断是否不是一个空数组
@@ -157,8 +159,24 @@ function addNodeButton(ctx, data, h, isBranch = false) {
               <el-popover placement="bottom" trigger="hover" width="180">
                 <div class="condition-item-box">
                   <p class="item-tip">分支下方节点整体放置在</p>
-                  <p class="condition-item" onClick={this.eventLancher.bind(ctx, "appendBranch", data, isBranch, "left")}>左侧</p>
-                  <p class="condition-item" onClick={this.eventLancher.bind(ctx, "appendBranch", data, isBranch,"default")}>不移动</p>
+                  <p class="condition-item" onClick={this.eventLancher.bind(ctx, "appendBranch", data, isBranch, "left")}>左侧
+                    <el-popover placement="top" trigger="hover" width="300">
+                      <div>
+                        <p>左侧</p>
+                        <img src={leftimg} alt="左侧" width="250"/>
+                      </div>
+                      <i slot="reference" class="el-icon-info"></i>
+                    </el-popover>
+                  </p>
+                  <p class="condition-item" onClick={this.eventLancher.bind(ctx, "appendBranch", data, isBranch, "default")}>不移动
+                    <el-popover placement="top" trigger="hover" width="300">
+                      <div>
+                        <p>不移动</p>
+                        <img src={defaultimg} alt="不移动" width="250"/>
+                      </div>
+                      <i slot="reference" class="el-icon-info"></i>
+                    </el-popover>
+                  </p>
                   <p class="item-tip">分支聚合后执行下方节点</p>
                 </div>
 

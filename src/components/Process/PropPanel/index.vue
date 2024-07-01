@@ -222,11 +222,53 @@
     </section>
 
     <!-- 抄送人 -->
-    <section  v-if="value && isCopyNode()" style="padding-left: 1rem;">
+    <!-- <section  v-if="value && isCopyNode()" style="padding-left: 1rem;">
       <p>抄送人</p>
       <fc-org-select ref="copy-org" :tabList="['user']" v-model="properties.menbers" buttonType="button" title="抄送人" />
       <br>
       <el-checkbox v-model="properties.userOptional">允许发起人自选抄送人</el-checkbox>
+    </section> -->
+    <section class="approver-pane" style="height:100%;" v-if="value && isCopyNode()">
+      <el-tabs v-model="activeName"  class="pane-tab">
+        <el-tab-pane label="设置抄送人" name="config">
+          <div >
+            <div style="padding: 12px;">
+              <el-radio-group v-model="copyForm.assigneeType" style="line-height: 32px;" @change="resetOrgCopyColl">
+                <el-radio v-for="item in assigneeTypeOptions" :label="item.value" :key="item.value" class="radio-item">{{item.label}}</el-radio>
+              </el-radio-group>
+            </div>
+            <div style="border-bottom: 1px solid #e5e5e5;padding-bottom: 1rem;">
+              <div v-if="copyForm.assigneeType === 'myself'"  class="option-box" style="color: #a5a5a5;">发起人自己将作为抄送人处理审批单</div>
+              <div v-else-if="copyForm.assigneeType === 'optional'"  class="option-box">
+                <p>可选多人</p>
+                <el-switch v-model="copyForm.optionalMultiUser" active-color="#13ce66"> </el-switch>
+              </div>
+              <!-- 主管  -->
+              <div v-else-if="copyForm.assigneeType === 'director'">
+                <div style="font-size: 14px;padding-left: 1rem;">发起人的 
+                  <el-select v-model="directorLevel" size="small">
+                    <el-option v-for="item in 5" :key="item" :label="item === 1 ? '直接主管': `第${item}级主管`" :value="item"
+                    ></el-option>
+                  </el-select>
+                  <br>
+                  <el-checkbox v-model="useDirectorProxy" style="margin-top: 1rem;">找不到主管时，由上级主管代审批</el-checkbox>
+                </div>
+              </div>
+              <div v-else class="option-box">
+                <fc-org-select  
+                ref="approver-org" 
+                buttonType="button" 
+                v-model="orgCopyCollection" 
+                :title="getAssignTypeLabel()" 
+                :tabList="fcOrgTabList.includes(copyForm.assigneeType) ? [copyForm.assigneeType] : ['dep']" 
+                @change="onOrgChange" />
+              </div>
+            </div>
+            
+          </div>
+
+        </el-tab-pane>
+      </el-tabs>
     </section>
 
     <!-- 选择权限条件的弹窗 -->
@@ -281,6 +323,11 @@ const defaultApproverForm = {
   // 审批类型为自选 出现 optionalMultiUser optionalRange
   optionalMultiUser: false,//是否可选多人
   // optionalRange: 'ALL', // USER<最多十个> / ALL / ROLE      发起人自选的选择范围（全公司，指定成员，角色）
+}
+const defaultCopyForm = {
+  approvers:[], // 审批人集合
+  assigneeType: "user", // 指定审批人
+  optionalMultiUser: false,//是否可选多人
 }
 export default {
   props: [/*当前节点数据*/"value", /*整个节点数据*/"processData"],
@@ -368,6 +415,13 @@ export default {
         },
       ],
       approverConfig:{},//新增的审批人的配置信息---用于配置bpmn
+      copyForm: JSON.parse(JSON.stringify(defaultCopyForm)),
+      orgCopyCollection:{
+        dep: [],
+        role: [],
+        user: [],
+        position: []
+      },
     };
   },
   computed: {
@@ -398,6 +452,12 @@ export default {
       for(let key in this.orgCollection){
         this.$set(this.orgCollection, key, [])
       }
+    },
+    resetOrgCopyColl() {
+      for(let key in this.orgCopyCollection){
+        this.$set(this.orgCopyCollection, key, [])
+      }
+      this.directorLevel=1
     },
     //审批人的时候涉及到的方法
     onOrgChange(data){ },
@@ -449,8 +509,21 @@ export default {
     //   return res
     // },
     //获取当前节点的数据信息 （给data里的properties赋值当前节点下的properties,目前没有用到）
-    initCopyNode () {
-      this.properties = this.value.properties
+    initCopyNode() {
+      // this.properties = this.value.properties
+      for (const key in this.copyForm) {
+        if (this.value.properties.hasOwnProperty(key)) {
+          this.copyForm[key] = this.value.properties[key];
+          if (this.copyForm.assigneeType === 'director') {
+            this.directorLevel = this.value.copyConfig.grade
+          }
+        }
+      }
+      const approvers = this.copyForm.approvers
+      this.resetOrgCopyColl()
+      if (Array.isArray(this.copyForm.approvers)) {
+        this.orgCopyCollection[this.copyForm.assigneeType] = approvers
+      }
     },
     //处理开始节点的发起人(initInitiator)和表单权限(formOperates)
     initStartNodeData(){
@@ -459,18 +532,50 @@ export default {
     },
     //抄送节点--点击确认按钮
     copyNodeConfirm () {
-      console.log("this.properties.menbers",this.properties.menbers)
-      let users=[]
-        Object.keys(this.properties.menbers)&&Object.keys(this.properties.menbers).forEach(key=>[
-          users =this.properties.menbers[key].map(t=>t.id)
-        ])
-      let copyConfig={
-        users:users,//----------------
-        allowSelfChoose:this.properties.userOptional
+      // console.log("this.properties.menbers",this.properties.menbers)
+      // let users=[]
+      //   Object.keys(this.properties.menbers)&&Object.keys(this.properties.menbers).forEach(key=>[
+      //     users =this.properties.menbers[key].map(t=>t.id)
+      //   ])
+      // let copyConfig={
+      //   users:users,//----------------
+      //   allowSelfChoose:this.properties.userOptional
+      // }
+      // console.log("抄送-confirm",this.properties)
+      // this.$emit("confirm", this.properties, this.getOrgSelectLabel('copy') || '发起人自选','copyNode',copyConfig);
+      // this.visible = false;
+      const assigneeType = this.copyForm.assigneeType
+      let content = ''
+      if (['optional','myself'].includes(assigneeType)) {
+        content = this.assigneeTypeOptions.find(t => t.value === assigneeType).label
+      } else if('director' === assigneeType){
+        content = this.directorLevel === 1 ? '直接主管' : `第${this.directorLevel}级主管`
+      } else{
+        content = this.getOrgSelectLabel('approver')
       }
-      console.log("抄送-confirm",this.properties)
-      this.$emit("confirm", this.properties, this.getOrgSelectLabel('copy') || '发起人自选','copyNode',copyConfig);
-      this.visible = false;
+      // const formOperates = this.approverForm.formOperates.map(t=>({formId: t.formId, formOperate: t.formOperate}))
+      this.copyForm.approvers = this.orgCopyCollection[assigneeType]
+      // Object.assign(this.properties, this.approverForm, {formOperates})
+      Object.assign(this.properties, this.copyForm)
+      //新增的审批人节点的配置信息用于生成bpmn文件的配置
+      let assigneeTypeIndex =this.assigneeTypeOptions.findIndex((item)=>item.value==assigneeType)
+      let users=[]
+      let staffLevelList =[]
+      if(this.assigneeTypeOptions[assigneeTypeIndex].id == 5){
+        staffLevelList = this.properties.approvers && this.properties.approvers.map(t=>t.id)
+      }else{
+        users= this.properties.approvers && this.properties.approvers.map(t=>t.id)
+      }
+      let copyConfig={
+        type:this.assigneeTypeOptions[assigneeTypeIndex].id,//审批人类型（assigneeType）
+        users:users,//审批人列表：type=1即指定成员时生效-------------------
+        staffLevel:staffLevelList,//type=5即角色/职级时生效
+        grade:this.directorLevel,//主管级别：type=2即主管生效(1-N)
+        gradeNext:this.useDirectorProxy,//找不到主管时，由上级主管代审批标记
+        allowMulti:this.properties.optionalMultiUser//允许选择多人
+      }
+      this.$emit("confirm", this.properties, content || '请设置抄送人','copyNode',copyConfig)
+      this.visible = false
     },
 
     /**
@@ -758,6 +863,7 @@ export default {
     visible(val) {
       if (!val) {
         this.approverForm = JSON.parse(JSON.stringify(defaultApproverForm)) // 重置数据为默认状态
+        this.copyForm = JSON.parse(JSON.stringify(defaultCopyForm)) // 重置数据为默认状态
         return
       }
       // this.processData.properties.formOperates = 
@@ -766,6 +872,7 @@ export default {
       this.isStartNode() && this.initStartNodeData()
       this.isApproverNode() && this.initApproverNodeData()
       this.isConditionNode() && this.initConditionNodeData()
+      this.isCopyNode() && this.initCopyNode()
     },
     value(newVal) {
       if (newVal && newVal.properties) {

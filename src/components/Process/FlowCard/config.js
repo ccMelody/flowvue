@@ -28,12 +28,26 @@ export default {
   copy:{
     type: 'copy',
     content: '发起人自选',
-    properties: {
-      title: '抄送人',
-      menbers: [],
-      userOptional: true
+    // properties: {
+    //   title: '抄送人',
+    //   menbers: [],
+    //   userOptional: true
+    // },
+    // copyConfig: {users: [], allowSelfChoose: true}
+    properties:{
+      approvers:[],
+      assigneeType: "optional",
+      optionalMultiUser: false,
+      title: "抄送人"
     },
-    copyConfig: {users: [], allowSelfChoose: true}
+    copyConfig:{
+      type:4,//审批人类型（assigneeType）
+      signType:'and' ,//会签/或签
+      users:[],//审批人列表：type=1即指定成员时生效
+      grade:1,//主管级别：type=2即主管生效(1-N)
+      gradeNext:true,//找不到主管时，由上级主管代审批标记
+      allowMulti:false//允许选择多人
+    }
   },
   condition: {
     type: "condition",

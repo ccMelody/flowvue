@@ -259,7 +259,7 @@
                 ref="approver-org" 
                 buttonType="button" 
                 v-model="orgCopyCollection" 
-                :title="getAssignTypeLabel()" 
+                :title="getAssignTypeLabelByCopy()"
                 :tabList="fcOrgTabList.includes(copyForm.assigneeType) ? [copyForm.assigneeType] : ['dep']" 
                 @change="onOrgChange" />
               </div>
@@ -524,6 +524,10 @@ export default {
       if (Array.isArray(this.copyForm.approvers)) {
         this.orgCopyCollection[this.copyForm.assigneeType] = approvers
       }
+    },
+    getAssignTypeLabelByCopy(){
+      const res = this.assigneeTypeOptions.find(t => t.value === this.copyForm.assigneeType)
+      return res ? res.label : ''
     },
     //处理开始节点的发起人(initInitiator)和表单权限(formOperates)
     initStartNodeData(){

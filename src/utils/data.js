@@ -32,6 +32,7 @@ flowData={
           counterSign:true,//是否为会签
           optionalMultiUser:false,//审批类型为自选 出现 optionalMultiUser optionalRange
           optionalRange:"ALl",
+          isComment:0,
           title:"",
           //审批人信息
           approvers:[
@@ -51,6 +52,7 @@ flowData={
           grade: 1,//主管级别：type=2即主管生效(1-N)
           gradeNext: true,//找不到主管时，由上级主管代审批标记(true:找不到往上找，false:指点主管层级：type=2即主管生效)
           allowMulti: true,//允许选择多人：type=4即发起人自选时生效(false=不允许 true=允许) （optionalMultiUser）
+          isComment:0,
         }
         
       }

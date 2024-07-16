@@ -188,6 +188,12 @@
               <br>
               <el-radio  v-model="approverForm.counterSign"  :label="false" class="radio-item">或签（一名审批人同意或拒绝即可）</el-radio>
             </div>
+            <div class="option-box">
+              <p>批复意见必填</p>
+              <el-radio v-model="approverForm.isComment" :label="1" class="radio-item">是</el-radio>
+              <br>
+              <el-radio v-model="approverForm.isComment"  :label="0" class="radio-item">否</el-radio>
+            </div>
           </div>
 
         </el-tab-pane>
@@ -281,6 +287,7 @@ const defaultApproverForm = {
   // 审批类型为自选 出现 optionalMultiUser optionalRange
   optionalMultiUser: false,//是否可选多人
   // optionalRange: 'ALL', // USER<最多十个> / ALL / ROLE      发起人自选的选择范围（全公司，指定成员，角色）
+  isComment:0,//是否必填
 }
 export default {
   props: [/*当前节点数据*/"value", /*整个节点数据*/"processData"],
@@ -641,7 +648,8 @@ export default {
         staffLevel:staffLevelList,//type=5即角色/职级时生效
         grade:this.directorLevel,//主管级别：type=2即主管生效(1-N)
         gradeNext:this.useDirectorProxy,//找不到主管时，由上级主管代审批标记
-        allowMulti:this.properties.optionalMultiUser//允许选择多人
+        allowMulti: this.properties.optionalMultiUser,//允许选择多人
+        isComment:this.properties.isComment
       }
       this.$emit("confirm", this.properties, content || '请设置审批人','approverNode',this.approverConfig)
       this.visible = false

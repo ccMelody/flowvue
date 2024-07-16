@@ -14,6 +14,7 @@ export default {
       assigneeType: "optional",
       counterSign: true,
       optionalMultiUser: false,
+      isComment:0,
       title: "审批人"
     },
     approverConfig:{
@@ -22,7 +23,8 @@ export default {
       users:[],//审批人列表：type=1即指定成员时生效
       grade:1,//主管级别：type=2即主管生效(1-N)
       gradeNext:true,//找不到主管时，由上级主管代审批标记
-      allowMulti:false//允许选择多人
+      allowMulti: false,//允许选择多人
+      isComment:0,//审批流中批复意见是否必填
     }
   },
   copy:{

@@ -370,6 +370,12 @@ export class NodeUtils {
     this.isApproverNode( node )
       && !customSettings.includes( props.assigneeType )
       && isEmptyArray( props.approvers )
+      && (valid = false)
+    
+  
+    this.isCopyNode( node )
+      && !customSettings.includes( props.assigneeType )
+      && isEmptyArray( props.approvers )
       && ( valid = false )
     return valid
   }
